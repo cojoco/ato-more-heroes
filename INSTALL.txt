@@ -1,0 +1,43 @@
+MORE HEROES - install guide (Across the Obelisk, Steam, Windows)
+
+Puts up to 8 heroes in a single-player Adventure run (experimental).
+Needs the Enemy Scaling mod: https://github.com/cojoco/ato-enemy-scaling/releases
+For co-op with more than 4 heroes, see More Players:
+https://github.com/cojoco/ato-more-players/releases
+
+1. Open the game folder.
+   In Steam, right-click "Across the Obelisk" > Manage > Browse local files.
+   You should see AcrossTheObelisk.exe. Keep this window open.
+
+2. Install BepInEx 5 (the mod loader). Skip this if you already use it.
+   - Go to https://github.com/BepInEx/BepInEx/releases
+   - Download the newest 5.4.x file named BepInEx_win_x64_5.4.x.x.zip
+     (NOT version 6, and NOT the x86 file).
+   - Open the zip and copy EVERYTHING inside it into the game folder, next to
+     AcrossTheObelisk.exe. You should end up with a "BepInEx" folder and a
+     "winhttp.dll" file in the game folder.
+
+3. Start the game once, wait for the main menu, then close it.
+   This creates the BepInEx\plugins folder.
+
+4. Copy EnemyScaling.dll (from the Enemy Scaling zip) and MoreHeroes.dll
+   (from this zip) into the game folder's BepInEx\plugins folder.
+   More Heroes does not load without Enemy Scaling.
+
+5. Start the game and begin a new single-player Adventure run. The hero
+   selection screen shows a second row of boxes: fill all of them.
+
+Changing the number of heroes
+- Open BepInEx\config\com.cojoco.moreheroes.cfg in Notepad (it appears after
+  the first start with the mod) and change HeroCount (4 to 8). Restart the game.
+- Enabled = false stops adding heroes to new runs.
+
+Troubleshooting
+- Nothing happens: right-click the DLLs > Properties and tick "Unblock" if it
+  is shown, then OK. Check that antivirus did not remove them.
+- Check BepInEx\LogOutput.log: it should say "More Heroes 0.2.24 loaded" and
+  "Transpilers: 53/53 applied".
+- To uninstall, delete MoreHeroes.dll from BepInEx\plugins.
+
+SAVES: a run with more than 4 heroes needs this mod to load; without it the
+game breaks at the first fight. Back up your save folder before trying it.
