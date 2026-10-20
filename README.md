@@ -5,6 +5,11 @@ A BepInEx 5 mod for Across the Obelisk that puts up to 8 heroes in a single-play
 **Status: 0.2.24 test build.** 8-hero combat works; the hero selection, rewards, event, loot and end-of-run screens handle every
 hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is not adapted yet.
 
+## Related mods
+
+- [Enemy Scaling](https://github.com/cojoco/ato-enemy-scaling): stronger enemies. Required by More Heroes.
+- [More Players](https://github.com/cojoco/ato-more-players): co-op with more than 4 heroes and rooms for up to 8 players. Needs More Heroes.
+
 ## What it does
 
 - The hero selection screen shows a second row of boxes, so you pick all 8 heroes (HeroCount boxes). The extra boxes are
@@ -41,12 +46,12 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
 ## Requirements
 
 - BepInEx 5.4 (win_x64 on Windows, linux_x64 on Linux).
-- The **Enemy Scaling** mod (`EnemyScaling.dll`) must be installed too; More Heroes will not load without it.
+- The [Enemy Scaling](https://github.com/cojoco/ato-enemy-scaling) mod (`EnemyScaling.dll`) must be installed too; More Heroes will not load without it.
   With twice the heroes you will want stronger enemies.
 
 ## Limits
 
-- Single player. In multiplayer the mod does nothing unless the **More Players** mod is installed on every player's game
+- Single player. In multiplayer the mod does nothing unless the [More Players](https://github.com/cojoco/ato-more-players) mod is installed on every player's game
   (co-op with more than 4 heroes, rooms for up to 8 players; experimental).
 - Adventure mode only, not the tutorial, Obelisk Challenge, weekly or Singularity.
 - **Saves:** a run with more than 4 heroes needs this mod to load. Without it the game breaks at the first fight. Back up your
