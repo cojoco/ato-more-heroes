@@ -47,6 +47,11 @@ in vanilla (the host gives boxes to players, a player may own several heroes). M
 `MultiplayerApi`): without MorePlayers every co-op game stays at 4 heroes and MoreHeroes does nothing there. Keep it that way:
 co-op code goes in MorePlayers, MoreHeroes gets at most small public hooks.
 
+## Repos and releases
+
+Git repo `git@github.com:cojoco/ato-more-heroes.git` (`main`); v0.2.25 released on GitHub (zip = DLL + INSTALL.txt). The release
+recipe and the other repos are in `../MorePlayers/HANDOFF.md` ("Repos and releases").
+
 ## Conventions (follow them)
 
 - `HeroSlots.Count` is the single source of truth: team size clamped 4..8 in single player; in multiplayer 4 unless

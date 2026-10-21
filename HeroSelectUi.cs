@@ -46,13 +46,14 @@ namespace MoreHeroes
         {
             GameManager gm = GameManager.Instance;
             AtOManager ato = AtOManager.Instance;
-            if (!Plugin.Enabled.Value)
-            {
-                return "[General] Enabled = false";
-            }
             if (gm == null || ato == null)
             {
                 return "game not ready";
+            }
+            // In co-op the host's room decides (MorePlayers), so every player gets the same boxes whatever their own config says.
+            if (!Plugin.Enabled.Value && !gm.IsMultiplayer())
+            {
+                return "[General] Enabled = false";
             }
             if (gm.IsMultiplayer())
             {

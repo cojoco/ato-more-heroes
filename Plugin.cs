@@ -15,7 +15,7 @@ namespace MoreHeroes
     {
         public const string PluginGuid = "com.cojoco.moreheroes";
         public const string PluginName = "More Heroes";
-        public const string PluginVersion = "0.2.24";
+        public const string PluginVersion = "0.2.25";
         public const string EnemyScalingGuid = "com.cojoco.enemyscaling";
 
         internal static ManualLogSource Log;
@@ -72,9 +72,12 @@ namespace MoreHeroes
             cfg = Config;
 
             Enabled = Config.Bind("General", "Enabled", true,
-                "Add extra heroes to new single-player Adventure runs. Turning this off does not break runs that already have more than 4 heroes.");
+                "Add extra heroes to new single-player Adventure runs, and offer HeroCount heroes when you host a co-op room (with MorePlayers). " +
+                "Turning this off does not break runs that already have more than 4 heroes. When you join someone else's co-op room, the host's " +
+                "settings are used and this is ignored.");
             HeroCount = Config.Bind("General", "HeroCount", 8,
-                new ConfigDescription("Total number of heroes in a new single-player Adventure run. The hero selection screen shows this many boxes.", new AcceptableValueRange<int>(4, 8)));
+                new ConfigDescription("Total number of heroes in a new single-player Adventure run, and in co-op rooms you host (with MorePlayers; at least the room size). " +
+                "When you join someone else's co-op room, the host's count is used and this is ignored.", new AcceptableValueRange<int>(4, 8)));
             ExtraHeroes = Config.Bind("Spike", "ExtraHeroes", "sentinel,assassin,pyromancer,priest",
                 "Fallback and first-time default. The extra hero boxes are pre-filled from this list the first time (later from " +
                 "[Selection] LastExtraHeroes). If a run begins with fewer than HeroCount heroes picked (e.g. the extra boxes could not be " +

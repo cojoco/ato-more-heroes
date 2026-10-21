@@ -104,11 +104,12 @@ namespace MoreHeroes
 
         private static string SkipReason(AtOManager ato)
         {
-            if (!Plugin.Enabled.Value)
+            GameManager gm = GameManager.Instance;
+            // In co-op the host's room decides (MorePlayers), so every player builds the same team whatever their own config says.
+            if (!Plugin.Enabled.Value && !gm.IsMultiplayer())
             {
                 return "[General] Enabled = false";
             }
-            GameManager gm = GameManager.Instance;
             if (gm.IsMultiplayer() && !MultiplayerApi.Expanded)
             {
                 return "multiplayer room with 4 heroes (more need the MorePlayers mod on every player's game)";

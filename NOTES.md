@@ -851,3 +851,9 @@ design). MoreHeroes keeps no co-op code; it only lets MorePlayers switch its pat
 
 Verified offline: builds with 0 warnings, 53/53 transpilers still apply. Without MorePlayers nothing changes (RoomHeroCount null
 -> co-op stays at 4).
+
+## 0.2.25 (2026-10-20, built, untested)
+
+Co-op ignores the local `[General] Enabled`: `ExtraHeroes.SkipReason` and `HeroSelectUi.SkipReason` only check it in single
+player. The co-op hero count already came from the host's room property `mp_heroes` (MorePlayers), but a joining player with
+`Enabled = false` would have skipped the extra boxes/heroes and desynced. Config descriptions now say the host's settings win in co-op.
