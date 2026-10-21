@@ -41,6 +41,7 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
   its totals count every hero. The Tome of Knowledge's past runs keep their 4 heroes.
 - Card minigames: every hero's portrait shows on the picked card; in the pairs memory game every hero takes turns (same
   number of flips as vanilla, so each hero flips less often).
+- **No Steam leaderboards.** Scores from runs played with this mod installed are not posted to the Steam leaderboards (normal, Obelisk, Singularity and weekly), so modded runs do not mix with vanilla ones. The log says "Steam leaderboard score not posted" when a run ends.
 - If fewer than HeroCount heroes are unlocked, the screen shows fewer boxes and the run is topped up from `[Spike] ExtraHeroes`.
 
 ## Requirements

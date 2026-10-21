@@ -35,7 +35,7 @@ Changing the number of heroes
 Troubleshooting
 - Nothing happens: right-click the DLLs > Properties and tick "Unblock" if it
   is shown, then OK. Check that antivirus did not remove them.
-- Check BepInEx\LogOutput.log: it should say "More Heroes 0.2.24 loaded" and
+- Check BepInEx\LogOutput.log: it should say "More Heroes <version> loaded" and
   "Transpilers: 53/53 applied".
 - To uninstall, delete MoreHeroes.dll from BepInEx\plugins.
 

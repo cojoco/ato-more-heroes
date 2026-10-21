@@ -15,7 +15,7 @@ namespace MoreHeroes
     {
         public const string PluginGuid = "com.cojoco.moreheroes";
         public const string PluginName = "More Heroes";
-        public const string PluginVersion = "0.2.25";
+        public const string PluginVersion = "0.2.26";
         public const string EnemyScalingGuid = "com.cojoco.enemyscaling";
 
         internal static ManualLogSource Log;
@@ -193,7 +193,7 @@ namespace MoreHeroes
                          typeof(FinishRunUi.CalculateGuard), typeof(Diagnostics.DeckWindowLog),
                          typeof(LootUi.StartPatch), typeof(LootUi.SetCharactersPatch), typeof(LootUi.GoldPortraitPatch),
                          typeof(SidePortraits.AwakePatch), typeof(SidePortraits.ShowPatch), typeof(SidePortraits.ResizePatch),
-                         typeof(SidePortraits.MapResizePatch), typeof(SidePortraits.CharacterWindowPatch)
+                         typeof(SidePortraits.MapResizePatch), typeof(SidePortraits.CharacterWindowPatch), typeof(NoLeaderboard.Patch)
                      })
             {
                 try
