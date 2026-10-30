@@ -26,6 +26,8 @@
     <Reference Include="UnityEngine.UI"><HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.Physics2DModule"><HintPath>$(ManagedDir)/UnityEngine.Physics2DModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.PhysicsModule"><HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(ManagedDir)/UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 
   <!-- Copy the built DLL straight into the game's plugins folder -->

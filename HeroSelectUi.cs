@@ -339,6 +339,8 @@ namespace MoreHeroes
                     b.transform.position += new Vector3(0f, top - v.Value.max.y, 0f);
                 }
 
+                ClipBoxColliders(boxes);
+
                 foreach (HeroSelection hs in hsm.heroSelectionDictionary.Values)
                 {
                     if (hs == null)
@@ -373,6 +375,66 @@ namespace MoreHeroes
             {
                 Plugin.Log.LogError($"Hero selection layout failed: {e}");
             }
+        }
+
+        // Box hit areas (what BoxSelection.OnMouseOver/OnMouseExit react to, and so GetOverBox) reach below the box art. With the
+        // second row stacked close under the first, Box_0's covered the top of Box_4: hovering Box_4 reported Box_0, so heroes were
+        // dropped into (or lifted from) the wrong box. Drops no longer depend on this (HeroSelectGuards.DropPatch), but clip
+        // box-shaped colliders to the box's visible bounds anyway so the hover highlight matches. Never grows a collider, so the
+        // second layout pass changes nothing. Colliders of other shapes are only logged.
+        private static void ClipBoxColliders(GameObject[] boxes)
+        {
+            Physics2D.SyncTransforms();
+            Physics.SyncTransforms();
+            var sb = new StringBuilder("Hero selection: box hit areas");
+            foreach (GameObject b in boxes)
+            {
+                Bounds? v = b != null ? RewardsUi.VisibleBounds(b.transform) : null;
+                if (v == null)
+                {
+                    sb.Append($" {b?.name ?? "?"}: no visible bounds;");
+                    continue;
+                }
+                sb.Append($" {b.name} (art y {v.Value.min.y:0.00}..{v.Value.max.y:0.00}):");
+                var found = new List<Component>();
+                found.AddRange(b.GetComponentsInChildren<Collider2D>(true));
+                found.AddRange(b.GetComponentsInChildren<Collider>(true));
+                if (found.Count == 0)
+                {
+                    sb.Append(" no collider;");
+                }
+                foreach (Component c in found)
+                {
+                    Bounds before = c is Collider2D c2 ? c2.bounds : ((Collider)c).bounds;
+                    sb.Append($" {c.GetType().Name} on {c.gameObject.name} y {before.min.y:0.00}..{before.max.y:0.00}");
+                    float xMin = Mathf.Max(before.min.x, v.Value.min.x), xMax = Mathf.Min(before.max.x, v.Value.max.x);
+                    float yMin = Mathf.Max(before.min.y, v.Value.min.y), yMax = Mathf.Min(before.max.y, v.Value.max.y);
+                    if (xMax <= xMin || yMax <= yMin || !(c is BoxCollider2D || c is BoxCollider))
+                    {
+                        sb.Append(" (left alone);");
+                        continue;
+                    }
+                    Transform t = c.transform;
+                    Vector3 scale = t.lossyScale;
+                    Vector3 centre = t.InverseTransformPoint(new Vector3((xMin + xMax) / 2f, (yMin + yMax) / 2f, t.position.z));
+                    var size = new Vector2((xMax - xMin) / Mathf.Abs(scale.x), (yMax - yMin) / Mathf.Abs(scale.y));
+                    if (c is BoxCollider2D bc2)
+                    {
+                        bc2.offset = centre;
+                        bc2.size = size;
+                    }
+                    else
+                    {
+                        var bc = (BoxCollider)c;
+                        bc.center = new Vector3(centre.x, centre.y, bc.center.z);
+                        bc.size = new Vector3(size.x, size.y, bc.size.z);
+                    }
+                    sb.Append($" -> {yMin:0.00}..{yMax:0.00};");
+                }
+            }
+            Physics2D.SyncTransforms();
+            Physics.SyncTransforms();
+            Plugin.Log.LogInfo(sb.ToString());
         }
 
         internal static void LogLayout(HeroSelectionManager hsm, string when)

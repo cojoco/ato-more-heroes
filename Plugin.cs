@@ -15,7 +15,7 @@ namespace MoreHeroes
     {
         public const string PluginGuid = "com.cojoco.moreheroes";
         public const string PluginName = "More Heroes";
-        public const string PluginVersion = "0.2.32";
+        public const string PluginVersion = "0.2.33";
         public const string EnemyScalingGuid = "com.cojoco.enemyscaling";
 
         internal static ManualLogSource Log;
@@ -190,6 +190,7 @@ namespace MoreHeroes
                          typeof(RewardsUi.SelectedCardPatch), typeof(DamageMeterUi.ShowPatch), typeof(MinigamesUi.ShowPortraitPatch), typeof(MinigamesUi.PairsStartPatch),
                          typeof(HeroSelectUi.StartPatch), typeof(HeroSelectUi.SandboxPatch), typeof(HeroSelectUi.PreAssignPatch),
                          typeof(HeroSelectUi.RandomHeroPatch), typeof(HeroSelectUi.ScreenReadyLog),
+                         typeof(HeroSelectGuards.PickHeroPatch), typeof(HeroSelectGuards.DropPatch), typeof(HeroSelectGuards.BeginAdventureCheck),
                          typeof(EventProbability.SetProbabilityPatch), typeof(EventProbability.GetProbabilityPatch),
                          typeof(EventsUi.AwakePatch), typeof(EventsUi.SetEventLog), typeof(EventsUi.EventResultLog),
                          typeof(EventsUi.OnResultPatch), typeof(EventsUi.ReplyInitPatch), typeof(EventsUi.IsCriticalPatch),
