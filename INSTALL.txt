@@ -1,6 +1,7 @@
 MORE HEROES - install guide (Across the Obelisk, Steam, Windows)
 
-Puts up to 8 heroes in a single-player Adventure run (experimental).
+Puts up to 8 heroes in a single-player Adventure, Obelisk Challenge or
+Singularity run (experimental).
 Needs the Enemy Scaling mod: https://github.com/cojoco/ato-enemy-scaling/releases
 For co-op with more than 4 heroes, see More Players:
 https://github.com/cojoco/ato-more-players/releases

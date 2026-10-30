@@ -198,7 +198,7 @@ namespace MoreHeroes
 
         internal static bool GroupScaling(int heroes)
         {
-            return heroes > HeroSlots.VanillaCount && Plugin.ScaleGroupRolls.Value;
+            return heroes > HeroSlots.VanillaCount && MultiplayerApi.ScaleGroupRolls;
         }
 
         // Group roll target (already including the madness modifier) scaled to the number of rolling heroes: target * heroes / 4,

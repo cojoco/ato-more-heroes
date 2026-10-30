@@ -291,6 +291,10 @@ namespace MoreHeroes
             Specs.Add(E("EventManager.EventResult", () => Co(typeof(EventManager), "EventResult"),
                 "group roll: card total compared with the target scaled by heroes/4 ([Balance] ScaleGroupRolls)",
                 EventsUi.EditGroupCompare));
+            Specs.Add(M("ChallengeSelectionManager.WriteBonus", () => AccessTools.Method(typeof(ChallengeSelectionManager), "WriteBonus"),
+                AccessTools.Method(typeof(SideClearance), nameof(SideClearance.DraftEffectsPerLine)),
+                "Obelisk draft: combat effects wrap every 14 icons (num % 14), reaching the energy graph moved under Ready; 10 with more than 4 heroes",
+                S(14, 1, (0, Shape.Rem))));
         }
 
         internal static bool FixTotalApplied

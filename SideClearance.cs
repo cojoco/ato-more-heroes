@@ -34,6 +34,8 @@ namespace MoreHeroes
         private const float ForgeBoxBottom = 3.01f;
         private const float ForgeBoxRightMargin = 0.1f;
         private const float EdgeMargin = 0.1f;
+        private const int DraftEffectsWrap = 10;        // Obelisk Challenge draft: combat effect icons per line (vanilla 14)
+        private const float DraftGapUnderReady = 0.15f; // Obelisk Challenge draft: between the Ready button and the energy graph
 
         private float next;
         private readonly HashSet<string> logged = new HashSet<string>();
@@ -45,6 +47,13 @@ namespace MoreHeroes
         private Vector3 energyScale;
         private Bounds energyBounds;
         private DeckEnergy hiddenEnergy; // hidden by us in the forge's saved-decks panel
+
+        // Called from transpiled IL (ChallengeSelectionManager.WriteBonus): icons per line of the draft screen's "Combat effects".
+        // Vanilla wraps at 14, which runs under the energy graph once it sits under the Ready button (more than 4 heroes).
+        public static int DraftEffectsPerLine(int k)
+        {
+            return HeroSlots.Count > HeroSlots.VanillaCount ? DraftEffectsWrap : k;
+        }
 
         private void Update()
         {
@@ -60,7 +69,8 @@ namespace MoreHeroes
                     return;
                 }
                 SideCharacters sc = TownManager.Instance != null ? TownManager.Instance.sideCharacters
-                    : MapManager.Instance != null ? MapManager.Instance.sideCharacters : null;
+                    : MapManager.Instance != null ? MapManager.Instance.sideCharacters
+                    : ChallengeSelectionManager.Instance != null ? ChallengeSelectionManager.Instance.sideCharacters : null;
                 if (sc == null || sc.charArray == null || sc.charArray.Length <= HeroSlots.VanillaCount)
                 {
                     return;
@@ -120,10 +130,11 @@ namespace MoreHeroes
             }
         }
 
-        // Craft types that show the energy graph: 0 altar, 1 church, 2 forge, 6 card corruption, 7 item corruption.
+        // Craft types that show the energy graph: 0 altar, 1 church, 2 forge, 5 Obelisk Challenge draft, 6 card corruption,
+        // 7 item corruption.
         private static bool ShowsEnergy(int craftType)
         {
-            return craftType == 0 || craftType == 1 || craftType == 2 || craftType == 6 || craftType == 7;
+            return craftType == 0 || craftType == 1 || craftType == 2 || craftType == 5 || craftType == 6 || craftType == 7;
         }
 
         private void PlaceEnergy(CardCraftManager cc)
@@ -192,6 +203,30 @@ namespace MoreHeroes
                 Vector3 newMax = p + (cur.Value.max - p) * k;
                 pos = p + new Vector3(boxRight - newMax.x, ForgeBoxTop - newMax.y, 0f);
                 where = "forge top right";
+            }
+            else if (cc.craftType == 5)
+            {
+                // Obelisk Challenge draft: the middle of the bottom is taken by the damage types / combat effects lines (they
+                // grow to the right, up to 14 entries a line), so use the space under the Ready button: centred on the button,
+                // top just under it, scaled to fit above the screen bottom. Measured afresh every check, as in the forge.
+                Bounds? cur = RewardsUi.VisibleBounds(t);
+                Bounds? ready = cc.readyChallenge != null ? RewardsUi.VisibleBounds(cc.readyChallenge) : null;
+                if (cur == null || ready == null || Mathf.Abs(energyScale.x) < 0.0001f)
+                {
+                    return;
+                }
+                float now = t.localScale.x / energyScale.x;
+                Vector3 size = cur.Value.size / now; // vanilla-size bounds
+                float top = ready.Value.min.y - DraftGapUnderReady;
+                float bottom = screen.y - screen.w + BottomGap;
+                float cx = Mathf.Min(ready.Value.center.x, right - size.x * 0.5f * Mathf.Min(1f, (top - bottom) / size.y));
+                scale = Mathf.Clamp(Mathf.Min((top - bottom) / size.y, 2f * (right - cx) / size.x), 0.3f, 1f);
+                float k = scale / now;
+                Vector3 p = t.position;
+                Vector3 newMin = p + (cur.Value.min - p) * k;
+                Vector3 newMax = p + (cur.Value.max - p) * k;
+                pos = p + new Vector3(cx - (newMin.x + newMax.x) * 0.5f, top - newMax.y, 0f);
+                where = $"draft screen under the Ready button (Ready y {ready.Value.min.y:0.00}..{ready.Value.max.y:0.00})";
             }
             else if (ShowsEnergy(cc.craftType))
             {

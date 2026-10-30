@@ -137,6 +137,53 @@ namespace MoreHeroes
             }
         }
 
+        // Effects.Play puts a target effect at the target's x but a fixed height (y 1.4 in the effects layer), which matches the
+        // vanilla single line of heroes. With stagger the upper and lower rows sit above and below that line, so lower-row
+        // effects (Barbed Wire's thorns, item and aura effects, ...) played up among the upper row. Move the effect by the hero's
+        // own height offset. Centre casts and effects with their own "effectLocation" child already have the right spot.
+        [HarmonyPatch(typeof(Effects), nameof(Effects.Play), new[] { typeof(string), typeof(Transform), typeof(bool), typeof(bool), typeof(bool), typeof(Transform) })]
+        internal static class EffectHeightPatch
+        {
+            private static bool logged;
+
+            private static void Postfix(Effects __instance, string effect, Transform theTransform, bool castInCenter, Transform customLocation)
+            {
+                try
+                {
+                    if (castInCenter || customLocation != null || theTransform == null || string.IsNullOrEmpty(effect)
+                        || HeroSlots.Count <= HeroSlots.VanillaCount || Plugin.HeroStagger.Value <= 0f)
+                    {
+                        return;
+                    }
+                    HeroItem item = theTransform.GetComponentInParent<HeroItem>();
+                    if (item == null)
+                    {
+                        return;
+                    }
+                    Transform h = item.transform;
+                    float dy = h.parent != null ? h.position.y - h.parent.TransformPoint(new Vector3(h.localPosition.x, 0f, h.localPosition.z)).y : 0f;
+                    if (Mathf.Abs(dy) < 0.01f)
+                    {
+                        return;
+                    }
+                    __instance.transform.position += new Vector3(0f, dy, 0f);
+                    if (!logged)
+                    {
+                        logged = true;
+                        Plugin.Log.LogInfo($"Combat: target effect '{effect}' on {item.name} moved {dy:0.00} to the hero's row (logged once).");
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (!logged)
+                    {
+                        logged = true;
+                        Plugin.Log.LogWarning($"Combat: moving an effect to the hero's row failed: {e.Message}");
+                    }
+                }
+            }
+        }
+
         // Marker so a hero GameObject is only scaled once.
         internal class ScaledMarker : MonoBehaviour
         {

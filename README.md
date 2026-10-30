@@ -1,6 +1,6 @@
 # More Heroes (experimental)
 
-A BepInEx 5 mod for Across the Obelisk that puts up to 8 heroes in a single-player Adventure run.
+A BepInEx 5 mod for Across the Obelisk that puts up to 8 heroes in a single-player Adventure, Obelisk Challenge or Singularity run.
 
 **Status: 0.2.24 test build.** 8-hero combat works; the hero selection, rewards, event, loot and end-of-run screens handle every
 hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is not adapted yet.
@@ -23,6 +23,9 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
   (XP, cards, HP, gold, items...). Group rolls add one card per hero, so with 8 heroes the target is doubled
   (`[Balance] ScaleGroupRolls`): "Group [5 or lower]" shows and works as "10 or lower" against the total of the cards shown.
   The odds, the result and critical results use the same target. Event gold is paid per hero, as in vanilla.
+  'Pay for the whole group' replies (perks, healing, a card or item for every hero, e.g. the alchemist brothers'
+  transmutation for everyone) cost x heroes / 4 (`[Balance] ScaleGroupEventCosts`); the price in the reply text follows.
+- Obelisk Challenge draft screen: the energy graph sits under the Ready button and the combat effects wrap after 10 icons.
 - End of run (resign, death or victory): a panel with rank progress for every hero, in two columns. Every hero gets its rank
   progress and the gold/dust reward is the vanilla single-player amount. The Tome of Knowledge run history records the
   first 4 heroes (its format has room for 4).
@@ -56,7 +59,9 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
 
 - Single player. In multiplayer the mod does nothing unless the [More Players](https://github.com/cojoco/ato-more-players) mod is installed on every player's game
   (co-op with more than 4 heroes, rooms for up to 8 players; experimental).
-- Adventure mode only, not the tutorial, Obelisk Challenge, weekly or Singularity.
+- Adventure, Obelisk Challenge and Singularity. Not the weekly challenge (its 4 heroes are set by the week) or the tutorial.
+  Obelisk Challenge and Singularity are new in 0.2.28 and less tested than Adventure. Heroes from DLC you do not own cannot be
+  picked in any mode.
 - **Saves:** a run with more than 4 heroes needs this mod to load. Without it the game breaks at the first fight. Back up your
   save folder before trying it.
 
@@ -94,7 +99,8 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
 | Layout | FinishRunScale | 0 | End of run: size of the hero panels (1 = vanilla). 0 = automatic (0.8 with 8 heroes). |
 | Layout | SidePortraitScale | 0 | Map/town/events: size of the hero portraits on the left (1 = vanilla). 0 = automatic (0.8). |
 | Layout | SidePortraitSpacing | 0 | Map/town/events: distance between those portraits (world units). 0 = automatic. |
-| Balance | ScaleGroupRolls | true | Events: group roll target x heroes / 4 (8 heroes: doubled). |
+| Balance | ScaleGroupRolls | true | Events: group roll target x heroes / 4 (8 heroes: doubled). In co-op the host's value is used. |
+| Balance | ScaleGroupEventCosts | true | Events: 'pay for the whole group' prices x heroes / 4. In co-op the host's value is used. |
 | Logging | ShowGameErrors | true | Log the game's own errors (to Player.log, see Problems). |
 
 Hero ids: mercenary, sentinel, berserker, warden, cleric, priest, voodoowitch, prophet, elementalist, pyromancer, warlock,

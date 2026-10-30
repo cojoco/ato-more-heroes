@@ -114,9 +114,9 @@ namespace MoreHeroes
             {
                 return "multiplayer room with 4 heroes (more need the MorePlayers mod on every player's game)";
             }
-            if (!gm.IsGameAdventure())
+            if (!HeroSlots.ModeAllowsExtraHeroes(gm))
             {
-                return $"only Adventure mode is supported in this spike (game type {gm.GameType})";
+                return $"only Adventure, Obelisk Challenge and Singularity get extra heroes (game type {gm.GameType})";
             }
             if (gm.IsTutorialGame() || ato.IsFirstGame())
             {
@@ -194,6 +194,13 @@ namespace MoreHeroes
                     Plugin.Log.LogWarning($"Picked hero '{id}' is already in the team, skipped (hero picks must be distinct).");
                     continue;
                 }
+                // The selection screen already blocks heroes from DLC the player does not own; check again so no path gets one in.
+                string dlc = Unusable(id, requireUnlocked: false);
+                if (dlc != null)
+                {
+                    Plugin.Log.LogWarning($"Picked hero '{id}' skipped: {dlc}.");
+                    continue;
+                }
                 Hero hero = CreateHero(ato, id);
                 if (hero?.HeroData == null)
                 {
@@ -251,7 +258,7 @@ namespace MoreHeroes
                     }
                     continue;
                 }
-                string why = Unusable(id, requireUnlocked: !fromConfig);
+                string why = Unusable(id, requireUnlocked: !fromConfig && HeroSlots.UnlockRequired(GameManager.Instance));
                 if (why != null)
                 {
                     if (fromConfig)
@@ -334,7 +341,8 @@ namespace MoreHeroes
             if (perks == null)
             {
                 // Co-op: perks come from the hero's owner (PerksManager.SetPlayerPerks); never fill them from the host's profile.
-                perks = GameManager.Instance.IsMultiplayer() ? new List<string>()
+                // Obelisk Challenge: perks are drafted on the challenge screen (SetPlayerPerksChallenge), not taken from the profile.
+                perks = GameManager.Instance.IsMultiplayer() || GameManager.Instance.IsObeliskChallenge() ? new List<string>()
                     : PlayerManager.Instance.GetHeroPerks(id, forceFromPlayerManager: true) ?? new List<string>();
                 AtOManager.Instance.PerksManager.heroPerks[id] = perks;
             }

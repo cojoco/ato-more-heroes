@@ -33,5 +33,37 @@ namespace MoreHeroes
 
         // [General] HeroCount (4..8), or 4 with [General] Enabled = false: what the host offers when creating a co-op room.
         public static int ConfiguredHeroCount => Plugin.Enabled.Value ? Plugin.TargetHeroCount : HeroSlots.VanillaCount;
+
+        // Set by MorePlayers: the host's [Balance] ScaleGroupRolls / ScaleGroupEventCosts for the current room (null outside a
+        // room, or when the room has no value). Every player must use the same rule, or event rolls and prices differ per player.
+        public static Func<bool?> RoomScaleGroupRolls;
+        public static Func<bool?> RoomScaleGroupEventCosts;
+
+        // What the host publishes when creating a co-op room.
+        public static bool ConfiguredScaleGroupRolls => Plugin.ScaleGroupRolls.Value;
+        public static bool ConfiguredScaleGroupEventCosts => Plugin.ScaleGroupEventCosts.Value;
+
+        // The rule in force: the host's in co-op, this player's config otherwise.
+        internal static bool ScaleGroupRolls => Effective(RoomScaleGroupRolls, Plugin.ScaleGroupRolls.Value);
+        internal static bool ScaleGroupEventCosts => Effective(RoomScaleGroupEventCosts, Plugin.ScaleGroupEventCosts.Value);
+
+        private static bool Effective(Func<bool?> room, bool local)
+        {
+            try
+            {
+                if (room != null && GameManager.Instance != null && GameManager.Instance.IsMultiplayer())
+                {
+                    bool? v = room();
+                    if (v.HasValue)
+                    {
+                        return v.Value;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return local;
+        }
     }
 }

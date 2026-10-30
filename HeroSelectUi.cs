@@ -14,8 +14,8 @@ namespace MoreHeroes
     // ("Box_N" is parsed by BoxSelection.Start, FillBox and IsYourBox), and boxGO[i] is box i, so the clones are appended in order.
     // The clones are made in a Prefix on HeroSelectionManager.Start, before StartCoContinue builds boxSelection/boxHero/boxFilled
     // from boxGO, so the game's own code treats them like the scene boxes. The box loops that were hardcoded to 4 are transpiled
-    // (IlPatches, HeroSelectUi.Shift). Every other mode (weekly, Obelisk challenge, Singularity, tutorial, combat tool, loading
-    // a single-player game) keeps 4 boxes, and then Shift returns k unchanged. Co-op Adventure gets the room's hero count
+    // (IlPatches, HeroSelectUi.Shift). Obelisk Challenge and Singularity use this same screen and get the extra boxes too. Every
+    // other case (weekly, tutorial, combat tool, loading a single-player game) keeps 4 boxes, and then Shift returns k unchanged. Co-op Adventure gets the room's hero count
     // (MultiplayerApi, set by the MorePlayers mod), 4 without it.
     internal static class HeroSelectUi
     {
@@ -67,9 +67,9 @@ namespace MoreHeroes
             {
                 return "[General] HeroCount = 4";
             }
-            if (!gm.IsGameAdventure() || gm.IsWeeklyChallenge() || gm.IsSingularity() || gm.IsObeliskChallenge())
+            if (!HeroSlots.ModeAllowsExtraHeroes(gm))
             {
-                return $"only Adventure mode gets extra heroes (game type {gm.GameType})";
+                return $"only Adventure, Obelisk Challenge and Singularity get extra heroes (game type {gm.GameType})";
             }
             if (gm.IsTutorialGame() || ato.IsFirstGame())
             {
@@ -87,14 +87,16 @@ namespace MoreHeroes
             return null;
         }
 
-        // Heroes the player can actually put in a box: main characters that are unlocked and whose DLC is owned.
+        // Heroes the player can actually put in a box: main characters that are unlocked (any in the Obelisk Challenge) and whose
+        // DLC is owned.
         private static int SelectableHeroes()
         {
+            bool unlockRequired = HeroSlots.UnlockRequired(GameManager.Instance);
             int n = 0;
             foreach (KeyValuePair<string, SubClassData> kv in Globals.Instance.SubClass)
             {
                 SubClassData scd = kv.Value;
-                if (scd == null || !scd.MainCharacter || !PlayerManager.Instance.IsHeroUnlocked(scd.Id))
+                if (scd == null || !scd.MainCharacter || (unlockRequired && !PlayerManager.Instance.IsHeroUnlocked(scd.Id)))
                 {
                     continue;
                 }
@@ -491,6 +493,7 @@ namespace MoreHeroes
                     taken.Add(id.Replace(" ", "").ToLowerInvariant());
                 }
             }
+            bool unlockRequired = HeroSlots.UnlockRequired(GameManager.Instance);
             var placed = new List<string>();
             int box = HeroSlots.VanillaCount;
             foreach (string raw in (source ?? "").Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries))
@@ -501,7 +504,7 @@ namespace MoreHeroes
                 }
                 string id = raw.Trim().ToLowerInvariant();
                 if (taken.Contains(id) || !hsm.heroSelectionDictionary.TryGetValue(id, out HeroSelection hs) || hs == null || hs.HeroPicked ||
-                    !PlayerManager.Instance.IsHeroUnlocked(id) || hs.DlcBlocked)
+                    (unlockRequired && !PlayerManager.Instance.IsHeroUnlocked(id)) || hs.DlcBlocked)
                 {
                     continue;
                 }

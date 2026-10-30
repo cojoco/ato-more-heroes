@@ -9,6 +9,20 @@ namespace MoreHeroes
         public const int VanillaCount = 4;
         public const int MaxCount = 8;
 
+        // Modes that can have extra heroes: Adventure, Obelisk Challenge and Singularity. Not the weekly challenge, whose 4 heroes
+        // are set by the week. The game's IsObeliskChallenge() is also true for weekly runs, so weekly is checked first.
+        internal static bool ModeAllowsExtraHeroes(GameManager gm)
+        {
+            return gm != null && !gm.IsWeeklyChallenge() && (gm.IsGameAdventure() || gm.IsObeliskChallenge() || gm.IsSingularity());
+        }
+
+        // The Obelisk Challenge (not weekly) lets you pick heroes this profile has not unlocked (HeroSelectionManager unblocks
+        // them); heroes from a DLC the player does not own stay blocked in every mode.
+        internal static bool UnlockRequired(GameManager gm)
+        {
+            return gm == null || !gm.IsObeliskChallenge() || gm.IsWeeklyChallenge();
+        }
+
         // Hero slot count: the size of AtOManager.team (clamped 4..8). In multiplayer always 4, unless the MorePlayers mod says the
         // room plays with more heroes (MultiplayerApi).
         // The team size is what matters, not the config, so an 8-hero save keeps working even with Enabled=false,

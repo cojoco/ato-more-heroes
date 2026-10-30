@@ -15,7 +15,7 @@ namespace MoreHeroes
     {
         public const string PluginGuid = "com.cojoco.moreheroes";
         public const string PluginName = "More Heroes";
-        public const string PluginVersion = "0.2.27";
+        public const string PluginVersion = "0.2.32";
         public const string EnemyScalingGuid = "com.cojoco.enemyscaling";
 
         internal static ManualLogSource Log;
@@ -45,6 +45,7 @@ namespace MoreHeroes
         internal static ConfigEntry<float> SelectionRowGap;
         internal static ConfigEntry<string> LastExtraHeroes;
         internal static ConfigEntry<bool> ScaleGroupRolls;
+        internal static ConfigEntry<bool> ScaleGroupEventCosts;
         internal static ConfigEntry<float> EventRollScale;
         internal static ConfigEntry<float> EventRollRowSpacing;
         internal static ConfigEntry<float> EventRollOffsetY;
@@ -127,6 +128,10 @@ namespace MoreHeroes
                 "Events with more than 4 heroes: a group roll adds up one card cost per hero, so 8 heroes roll about twice the total. " +
                 "On: the target scales with the number of heroes (x heroes / 4; 8 heroes: '5 or lower' becomes '10 or lower', 'X or higher' " +
                 "rounds up and 'X or lower' rounds down for 5-7 heroes). The reply, the odds, the result and critical results all use the scaled target.");
+            ScaleGroupEventCosts = Config.Bind("Balance", "ScaleGroupEventCosts", true,
+                "Events with more than 4 heroes: a 'pay for the whole group' reply (gold or shards for perks, healing, a card or item for " +
+                "every hero, e.g. the alchemist brothers' transmutation for everyone) costs x heroes / 4, so 8 heroes pay twice. Paid " +
+                "replies for one shared thing (loot, gold, travel, a shop) keep their price. In co-op the host's value is used.");
             EventRollColumns = Config.Bind("Layout", "EventRollColumns", 8,
                 new ConfigDescription("Events with more than 4 heroes: portraits per row. 8 = one row across the page; 4 = two rows (heroes 5-8 under 1-4).",
                     new AcceptableValueRange<int>(4, 8)));
@@ -179,7 +184,7 @@ namespace MoreHeroes
                      {
                          typeof(MoreHeroes.ExtraHeroes.BeginAdventureScope), typeof(MoreHeroes.ExtraHeroes.SetTeamPatch),
                          typeof(Layout.CalculatePositionXPatch), typeof(Layout.HeroItemInitPatch), typeof(Layout.GenerateHeroesLog),
-                         typeof(Layout.CalculateLocalPositionPatch), typeof(Layout.DrawOrderPatch), typeof(Diagnostics.GlobalsAwakePatch),
+                         typeof(Layout.CalculateLocalPositionPatch), typeof(Layout.DrawOrderPatch), typeof(Layout.EffectHeightPatch), typeof(Diagnostics.GlobalsAwakePatch),
                          typeof(Guards.SaveSlotPortraitsPatch), typeof(Guards.SidePanelHighlightPatch), typeof(Guards.CorruptionTriesPatch),
                          typeof(RewardsUi.StartPatch), typeof(RewardsUi.CheckAllAssignedPatch), typeof(RewardsUi.ShowRewardsPatch),
                          typeof(RewardsUi.SelectedCardPatch), typeof(DamageMeterUi.ShowPatch), typeof(MinigamesUi.ShowPortraitPatch), typeof(MinigamesUi.PairsStartPatch),
@@ -189,6 +194,7 @@ namespace MoreHeroes
                          typeof(EventsUi.AwakePatch), typeof(EventsUi.SetEventLog), typeof(EventsUi.EventResultLog),
                          typeof(EventsUi.OnResultPatch), typeof(EventsUi.ReplyInitPatch), typeof(EventsUi.IsCriticalPatch),
                          typeof(EventsUi.RollBoxTextPatch), typeof(EventsUi.RecentreRowPatch),
+                         typeof(EventCosts.GoldCostPatch), typeof(EventCosts.DustCostPatch), typeof(EventCosts.ReplyTextPatch),
                          typeof(FinishRunUi.StartPatch), typeof(FinishRunUi.PortraitPatch), typeof(FinishRunUi.ProgressionPatch),
                          typeof(FinishRunUi.CalculateGuard), typeof(Diagnostics.DeckWindowLog),
                          typeof(LootUi.StartPatch), typeof(LootUi.SetCharactersPatch), typeof(LootUi.GoldPortraitPatch),
