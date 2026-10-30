@@ -37,7 +37,7 @@ Troubleshooting
 - Nothing happens: right-click the DLLs > Properties and tick "Unblock" if it
   is shown, then OK. Check that antivirus did not remove them.
 - Check BepInEx\LogOutput.log: it should say "More Heroes <version> loaded" and
-  "Transpilers: 53/53 applied".
+  "Transpilers: 54/54 applied".
 - To uninstall, delete MoreHeroes.dll from BepInEx\plugins.
 
 SAVES: a run with more than 4 heroes needs this mod to load; without it the
