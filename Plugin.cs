@@ -15,7 +15,7 @@ namespace MoreHeroes
     {
         public const string PluginGuid = "com.cojoco.moreheroes";
         public const string PluginName = "More Heroes";
-        public const string PluginVersion = "0.2.26";
+        public const string PluginVersion = "0.2.27";
         public const string EnemyScalingGuid = "com.cojoco.enemyscaling";
 
         internal static ManualLogSource Log;

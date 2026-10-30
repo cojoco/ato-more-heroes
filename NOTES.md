@@ -857,3 +857,29 @@ Verified offline: builds with 0 warnings, 53/53 transpilers still apply. Without
 Co-op ignores the local `[General] Enabled`: `ExtraHeroes.SkipReason` and `HeroSelectUi.SkipReason` only check it in single
 player. The co-op hero count already came from the host's room property `mp_heroes` (MorePlayers), but a joining player with
 `Enabled = false` would have skipped the extra boxes/heroes and desynced. Config descriptions now say the host's settings win in co-op.
+
+## 0.2.27 (2026-10-30, confirmed in game): position labels on the hero selection boxes
+
+- User question: which box is the front hero? Combat is one line in box order (box i = position i; `KillHero` ->
+  `BattleTeamManager.UpdateCharactersPosition` renumbers the living heroes 0.. so the next hero becomes the front), but the
+  screen gave the wrong hint: vanilla `Box_0` has a `Front` label and `Box_3` a `Back` label (TextMeshPro + `Translate`, keys
+  `positionFront` / `positionBack`; read from level4 with UnityPy). Box_4 is cloned from Box_0, so it also said "Front", and
+  Box_3 kept "Back" with 5-8 heroes.
+- Fix (`HeroSelectUi.AddPositionLabels`, after the clones are made): every box gets a label. Box_0 keeps the translated
+  Front, the last box gets the Back text id (it is always a clone, so its `Translate.Start` has not run yet), the boxes in
+  between get "2nd".."7th" (English only; their `Translate` is removed with DestroyImmediate so a running coroutine cannot write
+  "Front"/"Back" over it). Boxes without a label get a clone of Box_0's `Front` object at the same local position/scale.
+  Logged: "Hero selection: position labels Box_0 Front, Box_1 2nd, ...".
+- Verified offline: build clean; no game code finds these children by name or child index. Guessed: how the labels look at
+  SelectionBoxScale 0.72 and whether the lower row's labels clash with anything.
+- First look in game (5 heroes, screenshot): labels Front / 2nd / 3rd / 4th / Back show correctly. The recommended-class hints
+  were copied with the boxes, so the Back box showed a tank shield (Box_0's). `HideClassHints`: with more than 4 boxes, disable
+  the renderers under every box's `BoxSelection.classImg` ("*" and icon; BoxSelection toggles that object's active state itself,
+  and TMP only mirrors its main renderer's enabled state to submeshes, so disabled renderers stay off) and under
+  `BoxCharacters/TitleSelection/Recommended` (the "* Recommended class for this position" caption; not referenced by game code).
+  Logged: "Hero selection: recommended class icons hidden on N boxes, caption hidden." Confirmed in game 2026-10-30 (5 heroes).
+- Game update (Assembly-CSharp.dll dated 2026-10-29): `LootManager.HighLight` no longer has the `activeCharacter < 4` check;
+  it moved into the new `GetLootSlot(character, itemType)` (`character >= 4` guard, shared with `ClearHighLight`). The
+  HighLight spec was SKIPPED in the 2026-10-30 log (52/53), so heroes 5-8 lost the equipment-slot highlight when hovering a loot
+  item. Spec retargeted to `GetLootSlot` (one 4, followed by a branch); ilcheck 53/53. Not yet seen in game.
+- EnemyScaling 0.3.0 checked in the same session: 5 heroes gave "HP x1.25, damage x1.125" and sheep 41 -> 51 HP.

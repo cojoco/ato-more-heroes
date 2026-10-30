@@ -246,8 +246,10 @@ namespace MoreHeroes
             Specs.Add(M("LootManager.LootGold", () => AccessTools.Method(typeof(LootManager), "LootGold"), lootPanels,
                 "loot: gold picked; activeCharacter >= 4 guard and activeCharacter = 4 (nobody picking)",
                 S(4, 2, (0, Shape.Branch), (1, Shape.Field))));
-            Specs.Add(M("LootManager.HighLight", () => AccessTools.Method(typeof(LootManager), "HighLight"), lootPanels,
-                "loot: highlight the equipment slot of the hero picking (activeCharacter < 4)",
+            // Game update 2026-10-29: the activeCharacter < 4 check moved from HighLight into the new GetLootSlot (used by HighLight
+            // and ClearHighLight).
+            Specs.Add(M("LootManager.GetLootSlot", () => AccessTools.Method(typeof(LootManager), "GetLootSlot"), lootPanels,
+                "loot: equipment slot of a hero for the highlight (character >= 4 guard)",
                 S(4, 1, (0, Shape.Branch))));
             Specs.Add(M("LootManager.ControllerMovement", () => AccessTools.Method(typeof(LootManager), "ControllerMovement"), lootPanels,
                 "loot: controller navigation over the panels (i < 4)",

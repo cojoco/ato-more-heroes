@@ -14,6 +14,8 @@ hero. 0.2.10 added side portraits for heroes 5 to 8 (map confirmed). The town is
 
 - The hero selection screen shows a second row of boxes, so you pick all 8 heroes (HeroCount boxes). The extra boxes are
   pre-filled with your last picks (the first time: Sentinel, Assassin, Pyromancer, Priest). Begin needs every box filled.
+  Each box is labelled with its place in the combat line (Front, 2nd, 3rd, ..., Back): heroes stand in one line in box order,
+  the second row of boxes is behind the first. The vanilla "recommended class" icons are hidden with more than 4 heroes.
 - In combat all heroes take part. Heroes are placed closer together and drawn a bit smaller so 8 fit on screen.
 - The rewards screen shows a row per hero in two columns (rows drawn smaller, cards less so; `[Layout] RewardCardScale`), so every hero picks a card or dust and gets XP and
   gold. With 8 heroes you get twice the gold per fight (gold is paid per hero, as in vanilla).

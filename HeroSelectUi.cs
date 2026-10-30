@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 
 namespace MoreHeroes
@@ -182,7 +183,107 @@ namespace MoreHeroes
                 all.Add(clone);
             }
             hsm.boxGO = all.ToArray();
+            try
+            {
+                AddPositionLabels(hsm.boxGO);
+                HideClassHints(hsm.boxGO);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogError($"Hero selection: position labels failed: {e}");
+            }
             LogLayout(hsm, "opened");
+        }
+
+        // Vanilla labels Box_0 "Front" and Box_3 "Back" (a TextMeshPro child with a Translate component, keys positionFront /
+        // positionBack, read from level4). The clones copied those, so Box_4 also said "Front" and Box_3 still said "Back".
+        // Box i is combat position i (heroes stand in one line, front to back), so label every box with its place:
+        // Front, 2nd, 3rd, ..., Back. Front and Back keep the game's translated words.
+        private static void AddPositionLabels(GameObject[] boxes)
+        {
+            Transform front = boxes[0].transform.Find("Front");
+            Transform back = boxes[HeroSlots.VanillaCount - 1].transform.Find("Back");
+            Translate backTranslate = back != null ? back.GetComponent<Translate>() : null;
+            if (front == null || front.GetComponent<TMP_Text>() == null || backTranslate == null)
+            {
+                Plugin.Log.LogError("Hero selection: Box_0/Front or Box_3/Back label not found; boxes keep the vanilla labels.");
+                return;
+            }
+            string backTextId = backTranslate.textId;
+            int n = boxes.Length;
+            var labels = new List<string>();
+            for (int i = 0; i < n; i++)
+            {
+                Transform box = boxes[i].transform;
+                Transform label = box.Find("Front") ?? box.Find("Back");
+                if (label == null)
+                {
+                    label = UnityEngine.Object.Instantiate(front.gameObject, box).transform;
+                    label.localPosition = front.localPosition;
+                    label.localRotation = front.localRotation;
+                    label.localScale = front.localScale;
+                }
+                label.name = i == 0 ? "Front" : i == n - 1 ? "Back" : "Position MoreHeroes";
+                Translate translate = label.GetComponent<Translate>();
+                TMP_Text text = label.GetComponent<TMP_Text>();
+                if (i == 0 || i == n - 1)
+                {
+                    // The last box is always a clone (Start not run yet) and Translate.Start reads textId, so setting it is enough.
+                    if (translate != null)
+                    {
+                        translate.textId = i == 0 ? "positionFront" : backTextId;
+                    }
+                }
+                else
+                {
+                    // Destroyed now, not at the end of the frame, so a running Translate coroutine cannot overwrite the ordinal.
+                    if (translate != null)
+                    {
+                        UnityEngine.Object.DestroyImmediate(translate);
+                    }
+                    text.text = Ordinal(i + 1);
+                }
+                labels.Add($"{boxes[i].name} {(i == 0 ? "Front" : i == n - 1 ? "Back" : Ordinal(i + 1))}");
+            }
+            Plugin.Log.LogInfo($"Hero selection: position labels {string.Join(", ", labels)}.");
+        }
+
+        // Each box shows the class vanilla recommends for its slot ("*" and an icon: shield, bow, fire, cross for Box_0..3; the
+        // clones copied them, so the Back box showed a tank shield). They do not fit a longer line, so hide them and the
+        // "* Recommended class for this position" line. BoxSelection switches the Class object (classImg) on and off itself,
+        // so the renderers under it are disabled instead.
+        private static void HideClassHints(GameObject[] boxes)
+        {
+            int hidden = 0;
+            foreach (GameObject b in boxes)
+            {
+                BoxSelection bs = b.GetComponent<BoxSelection>();
+                Transform cls = bs != null && bs.classImg != null ? bs.classImg : b.transform.Find("Class");
+                if (cls == null)
+                {
+                    continue;
+                }
+                foreach (Renderer r in cls.GetComponentsInChildren<Renderer>(true))
+                {
+                    r.enabled = false;
+                }
+                hidden++;
+            }
+            Transform caption = boxes[0].transform.parent?.parent?.Find("TitleSelection/Recommended");
+            if (caption != null)
+            {
+                foreach (Renderer r in caption.GetComponentsInChildren<Renderer>(true))
+                {
+                    r.enabled = false;
+                }
+            }
+            Plugin.Log.LogInfo($"Hero selection: recommended class icons hidden on {hidden} boxes" +
+                               (caption != null ? ", caption hidden." : "; caption TitleSelection/Recommended not found."));
+        }
+
+        private static string Ordinal(int k)
+        {
+            return k + (k == 2 ? "nd" : k == 3 ? "rd" : "th");
         }
 
         private static readonly AccessTools.FieldRef<HeroSelectionManager, Dictionary<GameObject, HeroSelection>> BoxHero =
